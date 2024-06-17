@@ -20,6 +20,7 @@ func main() {
 		w.Write([]byte("Hello World!"))
 	})
 
-	r.Get("/account", handlers.AccountHandler)
+	r.Get("/account", handlers.GetAccountHandler)
+	r.Get("/transactions", handlers.GetAllTransactionByUserIdHandler)
 	http.ListenAndServe(":3000", r)
 }

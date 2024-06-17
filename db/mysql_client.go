@@ -12,7 +12,7 @@ var db *sql.DB
 func OpenDB() *sql.DB {
 	var err error
 
-	db, err = sql.Open("mysql", "test_user:password@tcp(localhost:3307)/test_db")
+	db, err = sql.Open("mysql", "test_user:password@tcp(localhost:3307)/test_db?parseTime=true")
 
 	if err != nil {
 		fmt.Printf("ERROR opening db connection %e\n", err)
