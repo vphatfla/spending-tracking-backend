@@ -47,7 +47,7 @@ func PostNewTransactionHandler(responseW http.ResponseWriter, request *http.Requ
 	var transaction model.Transaction
 	err := json.NewDecoder(request.Body).Decode(&transaction)
 	if err != nil {
-		http.Error(responseW, "Invalid payload", http.StatusBadRequest)
+		http.Error(responseW, "Invalid payload   "+err.Error(), http.StatusBadRequest)
 		return
 	}
 

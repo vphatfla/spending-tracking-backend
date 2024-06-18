@@ -30,7 +30,7 @@ func GetAllTransactionByUserId(userId int) ([]model.Transaction, error) {
 }
 
 func UploadTransaction(transaction model.Transaction) (int64, error) {
-	query := "INSERT INTO transaction (userId, item_name, type, amount, comment, date) VALUES (?, ?, ?);"
+	query := "INSERT INTO transaction (user_id, item_name, type, amount, comment, date) VALUES (?, ?, ?, ?, ?, ?);"
 	var lastInsertedId int64
 	result, err := GetDBConn().Exec(query, transaction.UserID, transaction.ItemName, transaction.Type, transaction.Amount, transaction.Comment, transaction.Date)
 
