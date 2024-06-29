@@ -22,3 +22,33 @@ func GetAccountById(id int) (*model.User, error) {
 
 	return &user, nil
 }
+
+func InsertNewAccount(user model.User, hashedPassword string) (int64, error) {
+	query := "INSERT INTO user (username, name, password) VALUES (?, ?, ?);"
+	result, err := GetDBConn().Exec(query, user.Username, user.Name, hashedPassword)
+	var lastInsertedId int64
+	if err != nil {
+		return lastInsertedId, err
+	}
+	lastInsertedId, err = result.LastInsertId()
+
+	return lastInsertedId, err
+}
+
+func QueryByUserName(username string) error {
+	query := "SELECT username FROM user WHERE username = ?;"
+	var un string
+	err := GetDBConn().QueryRow(query, username).Scan(&username)
+
+	fmt.Printf("username %s", un)
+
+	return err
+}
+
+func GetHashPasswordByUserName(username string) (string, error) {
+	query := "SELECT password FROM user WHERE username = ?;"
+	var pw string
+	err := GetDBConn().QueryRow(query, username).Scan(&pw)
+
+	return pw, err
+}

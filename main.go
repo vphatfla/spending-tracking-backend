@@ -23,5 +23,7 @@ func main() {
 	r.Get("/account", handlers.GetAccountHandler)
 	r.Get("/transactions", handlers.GetAllTransactionByUserIdHandler)
 	r.Post("/transactions/upload", handlers.PostNewTransactionHandler)
+	r.Post("/users/insert", handlers.RegisterNewUserHandler)
+	r.Post("/users/login", handlers.AccountLoginHandler)
 	http.ListenAndServe(":3000", r)
 }

@@ -2,19 +2,41 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 
+	customerror "github.com/spending-tracking/customError"
 	"github.com/spending-tracking/db"
 	"github.com/spending-tracking/model"
+	"github.com/spending-tracking/util"
 )
 
 func GetAllTransactionByUserIdHandler(responseW http.ResponseWriter, request *http.Request) {
+	responseW.Header().Set("Content-Type", "application/json")
+	tkCheck, err := util.TokenRequestHandling(request)
+
+	if err != nil {
+		if errors.Is(err, customerror.NoAuthError()) {
+			responseW.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprint(responseW, "No Authorization detected")
+			return
+		}
+		if errors.Is(err, customerror.InvalidJWTToken()) {
+			responseW.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprint(responseW, "Invalid token")
+			return
+		}
+	}
+	if !tkCheck {
+		responseW.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(responseW, "Unable to authorize for resources")
+		return
+	}
 	// params
 	query := request.URL.Query()
 	userIdStr := query.Get("user_id")
-	responseW.Header().Set("Content-Type", "application/json")
 
 	// empty or invalid id
 	userId, err := strconv.Atoi(userIdStr)
@@ -43,9 +65,29 @@ func GetAllTransactionByUserIdHandler(responseW http.ResponseWriter, request *ht
 }
 
 func PostNewTransactionHandler(responseW http.ResponseWriter, request *http.Request) {
+	responseW.Header().Set("Content-Type", "application/json")
+	tkCheck, err := util.TokenRequestHandling(request)
+
+	if err != nil {
+		if errors.Is(err, customerror.NoAuthError()) {
+			responseW.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprint(responseW, "No Authorization detected")
+			return
+		}
+		if errors.Is(err, customerror.InvalidJWTToken()) {
+			responseW.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprint(responseW, "Invalid token")
+			return
+		}
+	}
+	if !tkCheck {
+		responseW.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(responseW, "Unable to authorize for resources")
+		return
+	}
 	// params
 	var transaction model.Transaction
-	err := json.NewDecoder(request.Body).Decode(&transaction)
+	err = json.NewDecoder(request.Body).Decode(&transaction)
 	if err != nil {
 		http.Error(responseW, "Invalid payload   "+err.Error(), http.StatusBadRequest)
 		return
