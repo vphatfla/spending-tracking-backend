@@ -11,7 +11,12 @@ import (
 	"github.com/spending-tracking/db"
 	"github.com/spending-tracking/model"
 	"github.com/spending-tracking/util"
+	"github.com/unrolled/render"
 )
+
+type tokenResponse struct {
+	Token string `json:"token"`
+}
 
 func GetAccountHandler(responseW http.ResponseWriter, request *http.Request) {
 	responseW.Header().Set("Content-Type", "application/json")
@@ -109,38 +114,40 @@ func RegisterNewUserHandler(responseW http.ResponseWriter, request *http.Request
 }
 
 func AccountLoginHandler(responseW http.ResponseWriter, request *http.Request) {
+	r := render.New()
 	var user model.User
 	json.NewDecoder(request.Body).Decode(&user)
 	username, raw_password := user.Username, user.RawPassword
 
 	// check if username exist
 	check, err := util.CheckUsernameExist(username)
+
 	if err != nil {
-		http.Error(responseW, "Invalid payload - username check "+err.Error(), http.StatusBadRequest)
+		r.JSON(responseW, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 	if !check {
-		http.Error(responseW, "Invalid payload - username does not exist ", http.StatusBadRequest)
+		r.JSON(responseW, http.StatusBadRequest, map[string]string{"error": "user do not exist"})
 		return
 	}
 
 	// check password
 	check, err = util.CheckRawPassword(raw_password, username)
 	if err != nil {
-		http.Error(responseW, "Invalid payload - username password check "+err.Error(), http.StatusBadRequest)
+		r.JSON(responseW, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 	if !check {
-		http.Error(responseW, "Invalid payload - WRONG password ", http.StatusBadRequest)
+		r.JSON(responseW, http.StatusBadRequest, map[string]string{"error": "Incorrect Password"})
 		return
 	}
 
 	tokenStr, err := util.CreateJWTToken(username)
 	if err != nil {
-		http.Error(responseW, "Error token not successful --- "+err.Error(), http.StatusBadRequest)
+		r.JSON(responseW, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 	responseW.Header().Set("Content-Type", "application/json")
 	responseW.WriteHeader(http.StatusOK)
-	fmt.Fprint(responseW, tokenStr)
+	r.JSON(responseW, http.StatusAccepted, map[string]string{"token": tokenStr})
 }
