@@ -11,6 +11,7 @@ import (
 	"github.com/spending-tracking/db"
 	"github.com/spending-tracking/model"
 	"github.com/spending-tracking/util"
+	"github.com/unrolled/render"
 )
 
 func GetAllTransactionByUserIdHandler(responseW http.ResponseWriter, request *http.Request) {
@@ -67,7 +68,7 @@ func GetAllTransactionByUserIdHandler(responseW http.ResponseWriter, request *ht
 func PostNewTransactionHandler(responseW http.ResponseWriter, request *http.Request) {
 	responseW.Header().Set("Content-Type", "application/json")
 	tkCheck, err := util.TokenRequestHandling(request)
-
+	r := render.New()
 	if err != nil {
 		if errors.Is(err, customerror.NoAuthError()) {
 			responseW.WriteHeader(http.StatusUnauthorized)
@@ -89,6 +90,7 @@ func PostNewTransactionHandler(responseW http.ResponseWriter, request *http.Requ
 	var transaction model.Transaction
 	err = json.NewDecoder(request.Body).Decode(&transaction)
 	if err != nil {
+		fmt.Print(err.Error())
 		http.Error(responseW, "Invalid payload   "+err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -101,5 +103,5 @@ func PostNewTransactionHandler(responseW http.ResponseWriter, request *http.Requ
 	}
 	// empty or invalid id
 	responseW.Header().Set("Content-Type", "application/json")
-	fmt.Fprint(responseW, "new transaction id = ", id)
+	r.JSON(responseW, http.StatusAccepted, map[string]any{"id":id})
 }

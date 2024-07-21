@@ -8,7 +8,7 @@ import (
 
 func CheckUsernameExist(username string) (bool, error) {
 
-	err := db.QueryByUserName(username)
+	_,err := db.QueryIdByUserName(username)
 
 	if err != nil {
 		if err != sql.ErrNoRows {
@@ -27,4 +27,9 @@ func CheckRawPassword(rawPassword, username string) (bool, error) {
 	}
 
 	return CheckPasswordHash(rawPassword, hash), nil
+}
+
+func GetUserIdBYUsername(username string) (int, error) {
+	id,err := db.QueryIdByUserName(username)
+	return id, err
 }

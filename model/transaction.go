@@ -9,5 +9,5 @@ type Transaction struct {
 	Type     string    `json:"type"`
 	Amount   float64   `json:"amount"`
 	Comment  string    `json:"comment,omitempty"`
-	Date     time.Time `json:"date"`
+	Date     time.Time `json:"date,omitempty"`
 }

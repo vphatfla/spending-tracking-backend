@@ -14,14 +14,11 @@ import (
 	"github.com/unrolled/render"
 )
 
-type tokenResponse struct {
-	Token string `json:"token"`
-}
 
 func GetAccountHandler(responseW http.ResponseWriter, request *http.Request) {
 	responseW.Header().Set("Content-Type", "application/json")
 	tkCheck, err := util.TokenRequestHandling(request)
-
+	r := render.New()
 	if err != nil {
 		if errors.Is(err, customerror.NoAuthError()) {
 			responseW.WriteHeader(http.StatusUnauthorized)
@@ -62,15 +59,14 @@ func GetAccountHandler(responseW http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	userJson, err := json.Marshal(user)
+	_, err = json.Marshal(user)
 	if err != nil {
 		responseW.WriteHeader(http.StatusBadRequest)
 		http.Error(responseW, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	responseW.WriteHeader(http.StatusOK)
-	fmt.Fprint(responseW, string(userJson))
+	r.JSON(responseW, http.StatusAccepted, user)
 }
 
 func RegisterNewUserHandler(responseW http.ResponseWriter, request *http.Request) {
@@ -147,7 +143,14 @@ func AccountLoginHandler(responseW http.ResponseWriter, request *http.Request) {
 		r.JSON(responseW, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
+
+	id, err := util.GetUserIdBYUsername(username)
+
+	if err != nil {
+		r.JSON(responseW, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
 	responseW.Header().Set("Content-Type", "application/json")
 	responseW.WriteHeader(http.StatusOK)
-	r.JSON(responseW, http.StatusAccepted, map[string]string{"token": tokenStr})
+	r.JSON(responseW, http.StatusAccepted, map[string]any{"token": tokenStr, "id": id})
 }

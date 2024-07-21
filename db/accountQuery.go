@@ -35,14 +35,12 @@ func InsertNewAccount(user model.User, hashedPassword string) (int64, error) {
 	return lastInsertedId, err
 }
 
-func QueryByUserName(username string) error {
-	query := "SELECT username FROM user WHERE username = ?;"
-	var un string
-	err := GetDBConn().QueryRow(query, username).Scan(&username)
+func QueryIdByUserName(username string) (int, error) {
+	query := "SELECT id FROM user WHERE username = ?;"
+	var id int
+	err := GetDBConn().QueryRow(query, username).Scan(&id)
 
-	fmt.Printf("username %s", un)
-
-	return err
+	return id, err
 }
 
 func GetHashPasswordByUserName(username string) (string, error) {
