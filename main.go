@@ -34,6 +34,7 @@ func main() {
 
 	r.Get("/account", handlers.GetAccountHandler)
 	r.Get("/transactions", handlers.GetAllTransactionByUserIdHandler)
+	r.Get("/transactions/dateRange", handlers.GetAllTransactionByUserIdAndDateRange)
 	r.Post("/transactions/upload", handlers.PostNewTransactionHandler)
 	r.Post("/users/insert", handlers.RegisterNewUserHandler)
 	r.Post("/users/login", handlers.AccountLoginHandler)

@@ -44,7 +44,7 @@ func GetAccountHandler(responseW http.ResponseWriter, request *http.Request) {
 
 	responseW.Header().Set("Content-Type", "application/json")
 
-	// empty or invalid id
+	// empty or invalid id 
 	userId, err := strconv.Atoi(userIdStr)
 	if err != nil {
 		responseW.WriteHeader(http.StatusBadRequest)
