@@ -32,11 +32,11 @@ func main() {
 		w.Write([]byte("Hello World!"))
 	})
 
-	r.Get("/account", handlers.GetAccountHandler)
-	r.Get("/transactions", handlers.GetAllTransactionByUserIdHandler)
-	r.Get("/transactions/dateRange", handlers.GetAllTransactionByUserIdAndDateRange)
-	r.Post("/transactions/upload", handlers.PostNewTransactionHandler)
-	r.Post("/users/insert", handlers.RegisterNewUserHandler)
-	r.Post("/users/login", handlers.AccountLoginHandler)
+	r.Get("/api/v1/account", handlers.GetAccountHandler)
+	r.Get("/api/v1/transactions", handlers.GetAllTransactionByUserIdHandler)
+	r.Get("/api/v1/transactions/dateRange", handlers.GetAllTransactionByUserIdAndDateRange)
+	r.Post("/api/v1/transactions/upload", handlers.PostNewTransactionHandler)
+	r.Post("/api/v1/users/insert", handlers.RegisterNewUserHandler)
+	r.Post("/api/v1/users/login", handlers.AccountLoginHandler)
 	http.ListenAndServe(":3000", r)
 }
